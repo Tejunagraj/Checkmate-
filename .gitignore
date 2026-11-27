@@ -1,0 +1,23 @@
+# Node
+node_modules/
+dist/
+coverage/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Local databases
+*.db
+*.sqlite3
+
+# Build and editor files
+.DS_Store
+.vscode/
