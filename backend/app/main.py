@@ -14,7 +14,7 @@ from app import models
 
 # Import API routers
 from app.api.sessions import router as sessions_router
-
+from app.api.orchestration import router as orchestration_router
 
 # ==========================================
 # DATABASE LIFECYCLE
@@ -69,7 +69,7 @@ app.add_middleware(
 
 app.include_router(sessions_router)
 
-
+app.include_router(orchestration_router)
 # ==========================================
 # ROOT ENDPOINT
 # ==========================================
