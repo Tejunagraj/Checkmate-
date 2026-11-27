@@ -1,14 +1,32 @@
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
+
+from app.persistence.database import engine
+from app.persistence.base import Base
+
+# Import models so SQLAlchemy registers their tables
+from app import models
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Initial development setup.
+    # We will introduce formal migrations as the schema grows.
+    Base.metadata.create_all(bind=engine)
+    yield
+
 
 app = FastAPI(
     title="CHECKMATE API",
     description="Checkpoint-Based Human-Agent Collaboration Platform",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
-# Allow the Ember.js frontend to communicate with FastAPI
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -38,3 +56,22 @@ def health_check():
         "backend": "running",
         "message": "CHECKMATE backend is ready"
     }
+
+
+@app.get("/api/health/database")
+def database_health():
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+
+        return {
+            "status": "success",
+            "database": "connected",
+            "type": "SQLite"
+        }
+
+    except Exception:
+        return {
+            "status": "error",
+            "database": "disconnected"
+        }
